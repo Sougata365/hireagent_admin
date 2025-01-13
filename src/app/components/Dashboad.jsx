@@ -10,6 +10,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { baseURL } from "../baseUrl";
+import {
+  Calendar,
+  Eye,
+  FileSpreadsheet,
+  Layers,
+  MousePointerClick,
+} from "lucide-react";
+import * as XLSX from "xlsx";
 
 const Dashboard = () => {
   const [tractionData, setTractionData] = useState({
@@ -17,6 +25,7 @@ const Dashboard = () => {
     totalImpression: 0,
   });
   const [botData, setBotData] = useState({ data: [], totalClicks: 0 });
+  const [videoData, setVideoData] = useState({ data: [], totalClicks: 0 });
   const [meetingData, setMeetingData] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
@@ -28,14 +37,16 @@ const Dashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [tractionRes, botRes, meetingRes] = await Promise.all([
+      const [tractionRes, botRes, meetingRes, videoRes] = await Promise.all([
         axios.get(`${baseURL}/api/traction/get-traction`),
         axios.get(`${baseURL}/api/traction/get-bot-imperssion`),
         axios.get(`${baseURL}/api/users/getMeeting`),
+        axios.get(`${baseURL}/api/traction/get-video-imperssion`),
       ]);
       setTractionData(tractionRes.data);
       setBotData(botRes.data);
       setMeetingData(meetingRes.data.data);
+      setVideoData(videoRes.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -87,6 +98,69 @@ const Dashboard = () => {
 
   const meetingStats = getMeetingStats();
 
+  function exportpageImpressionsToExcel(data) {
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.map((item) => ({
+        Page: item.page,
+        Impressions: item.impression,
+        "Created At": formatDate(item.createdAt),
+        "Last Updated": formatDate(item.updatedAt),
+      }))
+    );
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Page Impressions");
+    XLSX.writeFile(workbook, "Page_Impressions_Details.xlsx");
+  }
+
+  function exportToExcelBotInteractions(data) {
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.map((item) => ({
+        "Bot Name": item.bot,
+        Clicks: item.clicks,
+        "Created At": formatDate(item.createdAt),
+        "Last Updated": formatDate(item.updatedAt),
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Bot Interactions");
+
+    XLSX.writeFile(workbook, "Bot_Interactions_Details.xlsx");
+  }
+
+  function exportToExcelVideoInteractions(data) {
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.map((item) => ({
+        "Video Name/URL": item.video,
+        Clicks: item.views,
+        "Created At": formatDate(item.createdAt),
+        "Last Updated": formatDate(item.updatedAt),
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Video Interactions");
+
+    XLSX.writeFile(workbook, "Video_Interactions_Details.xlsx");
+  }
+
+  function exportToExcelMeetings(data) {
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.map((meeting) => ({
+        Customer: meeting.customerName,
+        Company: meeting.companyName,
+        Contact: `${meeting.email}, ${meeting.phoneNumber}`,
+        Description: meeting.desc,
+        Status: meeting.attended ? "Completed" : "Pending",
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Meetings");
+
+    XLSX.writeFile(workbook, "Meetings_Details.xlsx");
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
@@ -94,30 +168,11 @@ const Dashboard = () => {
           Analytics Dashboard
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-indigo-900 rounded-lg p-6 text-white">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Total Impressions</h3>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-indigo-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
+              <Eye className="text-indigo-400" />
             </div>
             <div className="text-3xl font-bold">
               {tractionData.totalImpression}
@@ -128,20 +183,7 @@ const Dashboard = () => {
           <div className="bg-purple-900 rounded-lg p-6 text-white">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Total Bot Clicks</h3>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-purple-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
-                />
-              </svg>
+              <MousePointerClick className="text-purple-400" />
             </div>
             <div className="text-3xl font-bold">{botData.totalClicks}</div>
             <p className="text-purple-300 mt-2">Total Bot Interactions</p>
@@ -150,20 +192,7 @@ const Dashboard = () => {
           <div className="bg-blue-900 rounded-lg p-6 text-white">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Meetings Overview</h3>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-blue-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
+              <Calendar className="text-blue-400" />
             </div>
             <div className="text-3xl font-bold">{meetingStats.total}</div>
             <div className="mt-2 space-y-1">
@@ -172,6 +201,15 @@ const Dashboard = () => {
               </p>
               <p className="text-yellow-300">Pending: {meetingStats.pending}</p>
             </div>
+          </div>
+
+          <div className="bg-purple-900 rounded-lg p-6 text-white">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Total Video Views</h3>
+              <Eye className="text-indigo-400" />
+            </div>
+            <div className="text-3xl font-bold">{videoData.totalClicks}</div>
+            <p className="text-purple-300 mt-2">Total Bot Interactions</p>
           </div>
         </div>
 
@@ -188,6 +226,7 @@ const Dashboard = () => {
                     value: tractionData.totalImpression,
                   },
                   { name: "Total Bot Clicks", value: botData.totalClicks },
+                  { name: "Total Video Views", value: videoData.totalClicks },
                   { name: "Total Meetings", value: meetingStats.total },
                   { name: "Completed Meetings", value: meetingStats.completed },
                   { name: "Pending Meetings", value: meetingStats.pending },
@@ -206,9 +245,17 @@ const Dashboard = () => {
         </div>
 
         <div className="bg-gray-800 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4">
-            Page Impressions Details
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-white">
+              Page Impressions Details
+            </h2>
+            <button
+              onClick={() => exportpageImpressionsToExcel(tractionData.data)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex justify-between items-center gap-2"
+            >
+              Export <Layers />
+            </button>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -246,9 +293,18 @@ const Dashboard = () => {
         </div>
 
         <div className="bg-gray-800 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4">
-            Bot Interactions Details
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Bot Interactions Details
+            </h2>
+            <button
+              onClick={() => exportToExcelBotInteractions(botData.data)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex justify-between items-center gap-2"
+            >
+              Export <Layers />
+            </button>
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -283,10 +339,88 @@ const Dashboard = () => {
           </div>
         </div>
 
+        <div className="bg-gray-800 rounded-lg p-6 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Video Interactions Details
+            </h2>
+            <button
+              onClick={() => exportToExcelVideoInteractions(videoData.data)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex justify-between items-center gap-2"
+            >
+              Export <Layers />
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-700">
+                  <th className="text-left py-3 px-4 text-gray-300">
+                    Video Name/URL
+                  </th>
+                  <th className="text-left py-3 px-4 text-gray-300">Clicks</th>
+                  <th className="text-left py-3 px-4 text-gray-300">
+                    Created At
+                  </th>
+                  <th className="text-left py-3 px-4 text-gray-300">
+                    Last Updated
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {videoData.data.map((item) => (
+                  <tr key={item._id} className="border-b border-gray-700">
+                    <td className="py-3 px-4 text-white">
+                      {item.video.includes("youtube.com") ||
+                      item.video.includes("youtu.be") ? (
+                        <div className="w-64 h-36">
+                          <iframe
+                            className="w-full h-full"
+                            src={
+                              item.video.includes("youtube.com")
+                                ? item.video.replace("watch?v=", "embed/")
+                                : item.video.replace(
+                                    "youtu.be/",
+                                    "youtube.com/embed/"
+                                  )
+                            }
+                            title="YouTube video"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          ></iframe>
+                        </div>
+                      ) : (
+                        item.video
+                      )}
+                    </td>
+
+                    <td className="py-3 px-4 text-gray-300">{item.views}</td>
+                    <td className="py-3 px-4 text-gray-300">
+                      {formatDate(item.createdAt)}
+                    </td>
+                    <td className="py-3 px-4 text-gray-300">
+                      {formatDate(item.updatedAt)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div className="bg-gray-800 rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">
-            All Meetings
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              All Meetings
+            </h2>
+            <button
+              onClick={() => exportToExcelMeetings(meetingData)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex justify-between items-center gap-2"
+            >
+              Export <Layers />
+            </button>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>

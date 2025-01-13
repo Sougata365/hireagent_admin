@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Search } from "lucide-react";
+import { Layers, Search } from "lucide-react";
 import { baseURL } from "../baseUrl";
+import * as XLSX from "xlsx";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -56,6 +57,27 @@ const UserManagement = () => {
       minute: "2-digit",
     });
   };
+
+  function exportToExcelUsers(users) {
+    // Create a worksheet from the user data
+    const worksheet = XLSX.utils.json_to_sheet(
+      users.map((user) => ({
+        Name: user?.name,
+        Email: user?.email,
+        Phone: user?.phoneNumber || "N/A",
+        Status: user?.status ? "Active" : "Inactive",
+        Plan: user?.selectedPlan?.name || "N/A",
+        JoinedDate: formatDate(user?.createdAt),
+      }))
+    );
+
+    // Create a workbook and add the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+
+    // Trigger the download
+    XLSX.writeFile(workbook, "User_Management_Details.xlsx");
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 p-6">
@@ -124,7 +146,17 @@ const UserManagement = () => {
         </div>
 
         <div className="bg-gray-800 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4">User List</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-white mb-4">User List</h2>
+            <div className="flex justify-between items-center mb-4">
+              <button
+                onClick={() => exportToExcelUsers(users)}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex justify-between items-center gap-2"
+              >
+                Export <Layers />
+              </button>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
