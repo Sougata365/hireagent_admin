@@ -13,10 +13,15 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [limit] = useState(10);
+  const [dateFilter, setDateFilter] = useState("all");
+  const [customDateRange, setCustomDateRange] = useState({
+    start: "",
+    end: "",
+  });
 
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, searchTerm]);
+  }, [currentPage, searchTerm, dateFilter, customDateRange]);
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -26,6 +31,9 @@ const UserManagement = () => {
           page: currentPage,
           limit,
           search: searchTerm,
+          dateFilter: dateFilter,
+          startDate: customDateRange.start,
+          endDate: customDateRange.end,
         },
       });
 
@@ -46,6 +54,16 @@ const UserManagement = () => {
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
+  };
+
+  const handleDateFilterChange = (filter) => {
+    setDateFilter(filter);
+    setCurrentPage(1);
+  };
+
+  const handleCustomDateChange = (e) => {
+    const { name, value } = e.target;
+    setCustomDateRange((prev) => ({ ...prev, [name]: value }));
   };
 
   const formatDate = (dateString) => {
@@ -144,7 +162,71 @@ const UserManagement = () => {
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
         </div>
-
+        <div className="flex gap-4 mb-6">
+          <button
+            onClick={() => handleDateFilterChange("all")}
+            className={`px-4 py-2 rounded ${
+              dateFilter === "all"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-white"
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => handleDateFilterChange("1day")}
+            className={`px-4 py-2 rounded ${
+              dateFilter === "1day"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-white"
+            }`}
+          >
+            Last 1 Day
+          </button>
+          <button
+            onClick={() => handleDateFilterChange("1week")}
+            className={`px-4 py-2 rounded ${
+              dateFilter === "1week"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-white"
+            }`}
+          >
+            Last 1 Week
+          </button>
+          <button
+            onClick={() => handleDateFilterChange("1month")}
+            className={`px-4 py-2 rounded ${
+              dateFilter === "1month"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-white"
+            }`}
+          >
+            Last 1 Month
+          </button>
+          <div>
+            <label className="text-white mr-2">Custom Range:</label>
+            <input
+              type="date"
+              name="start"
+              value={customDateRange.start}
+              onChange={handleCustomDateChange}
+              className="bg-gray-700 text-white px-2 py-1 rounded"
+            />
+            <input
+              type="date"
+              name="end"
+              value={customDateRange.end}
+              onChange={handleCustomDateChange}
+              className="bg-gray-700 text-white px-2 py-1 rounded ml-2"
+            />
+            <button
+              onClick={() => handleDateFilterChange("custom")}
+              className="ml-2 px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
         <div className="bg-gray-800 rounded-lg p-6 mb-8">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-white mb-4">User List</h2>

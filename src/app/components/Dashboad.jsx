@@ -30,6 +30,164 @@ const Dashboard = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [filterType, setFilterType] = useState("1month");
+  const [customDateRange, setCustomDateRange] = useState({
+    start: "",
+    end: "",
+  });
+  const [botFilterType, setBotFilterType] = useState("1month");
+  const [botDateRange, setBotDateRange] = useState({
+    startDate: "",
+    endDate: "",
+  });
+
+  const [videoFilterType, setVideoFilterType] = useState("1month");
+  const [videoDateRange, setVideoDateRange] = useState({
+    startVideoDate: "",
+    endVideoDate: "",
+  });
+
+  const [meetingFilterType, setMeetingFilterType] = useState("1month");
+  const [meetingDateRange, setMeetingDateRange] = useState({
+    startMeetingDate: "",
+    endMeetingDate: "",
+  });
+
+  const filterData = () => {
+    const now = new Date();
+    let filteredData = tractionData.data;
+
+    if (filterType === "1day") {
+      const oneDayAgo = new Date(now.setDate(now.getDate() - 1));
+      filteredData = filteredData.filter(
+        (item) => new Date(item.createdAt) >= oneDayAgo
+      );
+    } else if (filterType === "1week") {
+      const oneWeekAgo = new Date(now.setDate(now.getDate() - 7));
+      filteredData = filteredData.filter(
+        (item) => new Date(item.createdAt) >= oneWeekAgo
+      );
+    } else if (filterType === "1month") {
+      const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
+      filteredData = filteredData.filter(
+        (item) => new Date(item.createdAt) >= oneMonthAgo
+      );
+    } else if (filterType === "custom") {
+      const startDate = new Date(customDateRange.start);
+      const endDate = new Date(customDateRange.end);
+      filteredData = filteredData.filter(
+        (item) =>
+          new Date(item.createdAt) >= startDate &&
+          new Date(item.createdAt) <= endDate
+      );
+    }
+
+    return filteredData;
+  };
+
+  const filteredData = filterData();
+
+  const filterBotData = () => {
+    const now = new Date();
+    let filteredBotData = botData.data;
+
+    if (botFilterType === "1day") {
+      const oneDayAgo = new Date(now.setDate(now.getDate() - 1));
+      filteredBotData = filteredBotData.filter(
+        (item) => new Date(item.createdAt) >= oneDayAgo
+      );
+    } else if (botFilterType === "1week") {
+      const oneWeekAgo = new Date(now.setDate(now.getDate() - 7));
+      filteredBotData = filteredBotData.filter(
+        (item) => new Date(item.createdAt) >= oneWeekAgo
+      );
+    } else if (botFilterType === "1month") {
+      const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
+      filteredBotData = filteredBotData.filter(
+        (item) => new Date(item.createdAt) >= oneMonthAgo
+      );
+    } else if (botFilterType === "custom") {
+      const startDate = new Date(botDateRange.startDate);
+      const endDate = new Date(botDateRange.endDate);
+      filteredBotData = filteredBotData.filter(
+        (item) =>
+          new Date(item.createdAt) >= startDate &&
+          new Date(item.createdAt) <= endDate
+      );
+    }
+
+    return filteredBotData;
+  };
+
+  const filteredBotData = filterBotData();
+
+  const filterVideoData = () => {
+    const now = new Date();
+    let filteredVideoData = videoData.data;
+
+    if (videoFilterType === "1day") {
+      const oneDayAgo = new Date(now.setDate(now.getDate() - 1));
+      filteredVideoData = filteredVideoData.filter(
+        (item) => new Date(item.createdAt) >= oneDayAgo
+      );
+    } else if (videoFilterType === "1week") {
+      const oneWeekAgo = new Date(now.setDate(now.getDate() - 7));
+      filteredVideoData = filteredVideoData.filter(
+        (item) => new Date(item.createdAt) >= oneWeekAgo
+      );
+    } else if (videoFilterType === "1month") {
+      const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
+      filteredVideoData = filteredVideoData.filter(
+        (item) => new Date(item.createdAt) >= oneMonthAgo
+      );
+    } else if (videoFilterType === "custom") {
+      const startDate = new Date(videoDateRange.startVideoDate);
+      const endDate = new Date(videoDateRange.endVideoDate);
+      filteredVideoData = filteredVideoData.filter(
+        (item) =>
+          new Date(item.createdAt) >= startDate &&
+          new Date(item.createdAt) <= endDate
+      );
+    }
+
+    return filteredVideoData;
+  };
+
+  const filteredVideoData = filterVideoData();
+
+  const filterMeetingData = () => {
+    const now = new Date();
+    let filteredMeetingData = meetingData;
+
+    if (meetingFilterType === "1day") {
+      const oneDayAgo = new Date(now.setDate(now.getDate() - 1));
+      filteredMeetingData = filteredMeetingData.filter(
+        (item) => new Date(item.createdAt) >= oneDayAgo
+      );
+    } else if (meetingFilterType === "1week") {
+      const oneWeekAgo = new Date(now.setDate(now.getDate() - 7));
+      filteredMeetingData = filteredMeetingData.filter(
+        (item) => new Date(item.createdAt) >= oneWeekAgo
+      );
+    } else if (meetingFilterType === "1month") {
+      const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
+      filteredMeetingData = filteredMeetingData.filter(
+        (item) => new Date(item.createdAt) >= oneMonthAgo
+      );
+    } else if (meetingFilterType === "custom") {
+      const startDate = new Date(meetingDateRange.startMeetingDate);
+      const endDate = new Date(meetingDateRange.endMeetingDate);
+      filteredMeetingData = filteredMeetingData.filter(
+        (item) =>
+          new Date(item.createdAt) >= startDate &&
+          new Date(item.createdAt) <= endDate
+      );
+    }
+
+    return filteredMeetingData;
+  };
+
+  const filteredMeetingData = filterMeetingData();
 
   useEffect(() => {
     fetchData();
@@ -249,8 +407,46 @@ const Dashboard = () => {
             <h2 className="text-xl font-semibold text-white">
               Page Impressions Details
             </h2>
+            <div className="flex gap-4">
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="bg-gray-700 text-white px-4 py-2 rounded"
+              >
+                <option value="1day">Last 1 Day</option>
+                <option value="1week">Last 1 Week</option>
+                <option value="1month">Last 1 Month</option>
+                <option value="custom">Custom Range</option>
+              </select>
+              {filterType === "custom" && (
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={customDateRange.start}
+                    onChange={(e) =>
+                      setCustomDateRange({
+                        ...customDateRange,
+                        start: e.target.value,
+                      })
+                    }
+                    className="bg-gray-700 text-white px-4 py-2 rounded"
+                  />
+                  <input
+                    type="date"
+                    value={customDateRange.end}
+                    onChange={(e) =>
+                      setCustomDateRange({
+                        ...customDateRange,
+                        end: e.target.value,
+                      })
+                    }
+                    className="bg-gray-700 text-white px-4 py-2 rounded"
+                  />
+                </div>
+              )}
+            </div>
             <button
-              onClick={() => exportpageImpressionsToExcel(tractionData.data)}
+              onClick={() => exportpageImpressionsToExcel(filteredData)}
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex justify-between items-center gap-2"
             >
               Export <Layers />
@@ -273,7 +469,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {tractionData.data.map((item) => (
+                {filteredData.map((item) => (
                   <tr key={item._id} className="border-b border-gray-700">
                     <td className="py-3 px-4 text-white">{item.page}</td>
                     <td className="py-3 px-4 text-gray-300">
@@ -297,8 +493,46 @@ const Dashboard = () => {
             <h2 className="text-xl font-semibold text-white mb-4">
               Bot Interactions Details
             </h2>
+            <div className="flex gap-4">
+              <select
+                value={botFilterType}
+                onChange={(e) => setBotFilterType(e.target.value)}
+                className="bg-gray-700 text-white px-4 py-2 rounded"
+              >
+                <option value="1day">Last 1 Day</option>
+                <option value="1week">Last 1 Week</option>
+                <option value="1month">Last 1 Month</option>
+                <option value="custom">Custom Range</option>
+              </select>
+              {botFilterType === "custom" && (
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={botDateRange.startDate}
+                    onChange={(e) =>
+                      setBotDateRange({
+                        ...botDateRange,
+                        startDate: e.target.value,
+                      })
+                    }
+                    className="bg-gray-700 text-white px-4 py-2 rounded"
+                  />
+                  <input
+                    type="date"
+                    value={botDateRange.endDate}
+                    onChange={(e) =>
+                      setBotDateRange({
+                        ...botDateRange,
+                        endDate: e.target.value,
+                      })
+                    }
+                    className="bg-gray-700 text-white px-4 py-2 rounded"
+                  />
+                </div>
+              )}
+            </div>
             <button
-              onClick={() => exportToExcelBotInteractions(botData.data)}
+              onClick={() => exportToExcelBotInteractions(filteredBotData)}
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex justify-between items-center gap-2"
             >
               Export <Layers />
@@ -322,7 +556,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {botData.data.map((item) => (
+                {filteredBotData.map((item) => (
                   <tr key={item._id} className="border-b border-gray-700">
                     <td className="py-3 px-4 text-white">{item.bot}</td>
                     <td className="py-3 px-4 text-gray-300">{item.clicks}</td>
@@ -344,13 +578,52 @@ const Dashboard = () => {
             <h2 className="text-xl font-semibold text-white mb-4">
               Video Interactions Details
             </h2>
+            <div className="flex gap-4">
+              <select
+                value={videoFilterType}
+                onChange={(e) => setVideoFilterType(e.target.value)}
+                className="bg-gray-700 text-white px-4 py-2 rounded"
+              >
+                <option value="1day">Last 1 Day</option>
+                <option value="1week">Last 1 Week</option>
+                <option value="1month">Last 1 Month</option>
+                <option value="custom">Custom Range</option>
+              </select>
+              {videoFilterType === "custom" && (
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={videoDateRange.startVideoDate}
+                    onChange={(e) =>
+                      setVideoDateRange({
+                        ...videoDateRange,
+                        startVideoDate: e.target.value,
+                      })
+                    }
+                    className="bg-gray-700 text-white px-4 py-2 rounded"
+                  />
+                  <input
+                    type="date"
+                    value={videoDateRange.endVideoDate}
+                    onChange={(e) =>
+                      setVideoDateRange({
+                        ...videoDateRange,
+                        endVideoDate: e.target.value,
+                      })
+                    }
+                    className="bg-gray-700 text-white px-4 py-2 rounded"
+                  />
+                </div>
+              )}
+            </div>
             <button
-              onClick={() => exportToExcelVideoInteractions(videoData.data)}
+              onClick={() => exportToExcelVideoInteractions(filteredVideoData)}
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex justify-between items-center gap-2"
             >
               Export <Layers />
             </button>
           </div>
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -368,7 +641,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {videoData.data.map((item) => (
+                {filteredVideoData.map((item) => (
                   <tr key={item._id} className="border-b border-gray-700">
                     <td className="py-3 px-4 text-white">
                       {item.video.includes("youtube.com") ||
@@ -414,13 +687,52 @@ const Dashboard = () => {
             <h2 className="text-xl font-semibold text-white mb-4">
               All Meetings
             </h2>
+            <div className="flex gap-4">
+              <select
+                value={meetingFilterType}
+                onChange={(e) => setMeetingFilterType(e.target.value)}
+                className="bg-gray-700 text-white px-4 py-2 rounded"
+              >
+                <option value="1day">Last 1 Day</option>
+                <option value="1week">Last 1 Week</option>
+                <option value="1month">Last 1 Month</option>
+                <option value="custom">Custom Range</option>
+              </select>
+              {meetingFilterType === "custom" && (
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={meetingDateRange.startMeetingDate}
+                    onChange={(e) =>
+                      setMeetingDateRange({
+                        ...meetingDateRange,
+                        startMeetingDate: e.target.value,
+                      })
+                    }
+                    className="bg-gray-700 text-white px-4 py-2 rounded"
+                  />
+                  <input
+                    type="date"
+                    value={meetingDateRange.endMeetingDate}
+                    onChange={(e) =>
+                      setMeetingDateRange({
+                        ...meetingDateRange,
+                        endMeetingDate: e.target.value,
+                      })
+                    }
+                    className="bg-gray-700 text-white px-4 py-2 rounded"
+                  />
+                </div>
+              )}
+            </div>
             <button
-              onClick={() => exportToExcelMeetings(meetingData)}
+              onClick={() => exportToExcelMeetings(filteredMeetingData)}
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex justify-between items-center gap-2"
             >
               Export <Layers />
             </button>
           </div>
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -438,7 +750,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {meetingData.map((meeting) => (
+                {filteredMeetingData.map((meeting) => (
                   <tr key={meeting._id} className="border-b border-gray-700">
                     <td className="py-3 px-4 text-white">
                       {meeting.customerName}
