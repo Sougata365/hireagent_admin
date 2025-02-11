@@ -14,6 +14,7 @@ const AssistantManagement = () => {
     category: "",
     description: "",
     price: "",
+    videoLink: "",
     image: "",
     features: [],
     integrations: [],
@@ -91,6 +92,7 @@ const AssistantManagement = () => {
       category: "",
       description: "",
       price: "",
+      videoLink: "",
       image: "",
       features: [],
       integrations: [],
@@ -155,9 +157,7 @@ const AssistantManagement = () => {
           Add Assistant
         </button>
       </div>
-
-      {/* Assistants Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-black">
         {assistants.map((assistant) => (
           <div
             key={assistant._id}
@@ -186,10 +186,8 @@ const AssistantManagement = () => {
           </div>
         ))}
       </div>
-
-      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 text-black">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">
@@ -205,75 +203,157 @@ const AssistantManagement = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Assistant Name"
-                  className="w-full p-2 border rounded-lg"
-                  required
-                />
-                <input
-                  type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  placeholder="Category"
-                  className="w-full p-2 border rounded-lg"
-                  required
-                />
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Description"
-                  className="w-full p-2 border rounded-lg"
-                  required
-                />
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  placeholder="Price"
-                  className="w-full p-2 border rounded-lg"
-                  required
-                />
-                <input
-                  type="text"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleInputChange}
-                  placeholder="Image URL"
-                  className="w-full p-2 border rounded-lg"
-                  required
-                />
-
-                {/* Creator Information */}
-                <div className="border-t pt-4">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Creator Details
-                  </h3>
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Assistant Name
+                  </label>
                   <input
+                    id="name"
                     type="text"
                     name="name"
-                    value={formData.creator.name}
-                    onChange={handleCreatorChange}
-                    placeholder="Creator Name"
-                    className="w-full p-2 border rounded-lg mb-2"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Assistant Name"
+                    className="w-full p-2 border rounded-lg"
                     required
                   />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="category"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Category
+                  </label>
+                  <input
+                    id="category"
+                    type="text"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    placeholder="Category"
+                    className="w-full p-2 border rounded-lg"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Description
+                  </label>
                   <textarea
+                    id="description"
                     name="description"
-                    value={formData.creator.description}
-                    onChange={handleCreatorChange}
-                    placeholder="Creator Description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Description"
+                    className="w-full p-2 border rounded-lg"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="price"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Price
+                  </label>
+                  <input
+                    id="price"
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    placeholder="Price"
+                    className="w-full p-2 border rounded-lg"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="videoLink"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Video Link
+                  </label>
+                  <input
+                    id="videoLink"
+                    type="text"
+                    name="videoLink"
+                    value={formData.videoLink}
+                    onChange={handleInputChange}
+                    placeholder="Video Link"
                     className="w-full p-2 border rounded-lg"
                   />
                 </div>
 
-                {/* How To Use Steps */}
+                <div>
+                  <label
+                    htmlFor="image"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Image URL
+                  </label>
+                  <input
+                    id="image"
+                    type="text"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleInputChange}
+                    placeholder="Image URL"
+                    className="w-full p-2 border rounded-lg"
+                  />
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Creator Details
+                  </h3>
+                  <div>
+                    <label
+                      htmlFor="creatorName"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Creator Name
+                    </label>
+                    <input
+                      id="creatorName"
+                      type="text"
+                      name="name"
+                      value={formData.creator.name}
+                      onChange={handleCreatorChange}
+                      placeholder="Creator Name"
+                      className="w-full p-2 border rounded-lg mb-2"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="creatorDescription"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Creator Description
+                    </label>
+                    <textarea
+                      id="creatorDescription"
+                      name="description"
+                      value={formData.creator.description}
+                      onChange={handleCreatorChange}
+                      placeholder="Creator Description"
+                      className="w-full p-2 border rounded-lg"
+                    />
+                  </div>
+                </div>
+
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">How To Use Steps</h3>
@@ -287,29 +367,47 @@ const AssistantManagement = () => {
                   </div>
                   {formData.howToUse.map((step, index) => (
                     <div key={index} className="space-y-2 mb-4">
-                      <input
-                        type="text"
-                        value={step.title}
-                        onChange={(e) => {
-                          const newHowToUse = [...formData.howToUse];
-                          newHowToUse[index].title = e.target.value;
-                          setFormData({ ...formData, howToUse: newHowToUse });
-                        }}
-                        placeholder="Step Title"
-                        className="w-full p-2 border rounded-lg"
-                        required
-                      />
-                      <textarea
-                        value={step.description}
-                        onChange={(e) => {
-                          const newHowToUse = [...formData.howToUse];
-                          newHowToUse[index].description = e.target.value;
-                          setFormData({ ...formData, howToUse: newHowToUse });
-                        }}
-                        placeholder="Step Description"
-                        className="w-full p-2 border rounded-lg"
-                        required
-                      />
+                      <div>
+                        <label
+                          htmlFor={`stepTitle${index}`}
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Step Title
+                        </label>
+                        <input
+                          id={`stepTitle${index}`}
+                          type="text"
+                          value={step.title}
+                          onChange={(e) => {
+                            const newHowToUse = [...formData.howToUse];
+                            newHowToUse[index].title = e.target.value;
+                            setFormData({ ...formData, howToUse: newHowToUse });
+                          }}
+                          placeholder="Step Title"
+                          className="w-full p-2 border rounded-lg"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor={`stepDescription${index}`}
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Step Description
+                        </label>
+                        <textarea
+                          id={`stepDescription${index}`}
+                          value={step.description}
+                          onChange={(e) => {
+                            const newHowToUse = [...formData.howToUse];
+                            newHowToUse[index].description = e.target.value;
+                            setFormData({ ...formData, howToUse: newHowToUse });
+                          }}
+                          placeholder="Step Description"
+                          className="w-full p-2 border rounded-lg"
+                          required
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
