@@ -9,6 +9,7 @@ const AssistantManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentAssistant, setCurrentAssistant] = useState(null);
+  const [availableIntegrations, setAvailableIntegrations] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -32,7 +33,19 @@ const AssistantManagement = () => {
 
   useEffect(() => {
     fetchAssistants();
+    fetchIntegrations();
   }, []);
+
+  const fetchIntegrations = async () => {
+    try {
+      const response = await axios.get(
+        "https://api.npoint.io/f3e25c97923d55318c5a"
+      );
+      setAvailableIntegrations(response.data);
+    } catch (error) {
+      console.error("Error fetching integrations:", error);
+    }
+  };
 
   const fetchAssistants = async () => {
     try {
@@ -145,6 +158,42 @@ const AssistantManagement = () => {
     }));
   };
 
+  const handleFeatureChange = (index, value) => {
+    const newFeatures = [...formData.features];
+    newFeatures[index] = value;
+    setFormData({ ...formData, features: newFeatures });
+  };
+
+  const addFeature = () => {
+    setFormData({ ...formData, features: [...formData.features, ""] });
+  };
+
+  const removeFeature = (index) => {
+    const newFeatures = formData.features.filter((_, i) => i !== index);
+    setFormData({ ...formData, features: newFeatures });
+  };
+
+  const handleIntegrationChange = (e) => {
+    const selectedIntegration = e.target.value;
+    if (
+      selectedIntegration &&
+      !formData.integrations.includes(selectedIntegration)
+    ) {
+      setFormData({
+        ...formData,
+        integrations: [...formData.integrations, selectedIntegration],
+      });
+    }
+  };
+
+  const removeIntegration = (indexToRemove) => {
+    setFormData({
+      ...formData,
+      integrations: formData.integrations.filter(
+        (_, index) => index !== indexToRemove
+      ),
+    });
+  };
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -313,7 +362,81 @@ const AssistantManagement = () => {
                     className="w-full p-2 border rounded-lg"
                   />
                 </div>
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold">Features</h3>
+                    <button
+                      type="button"
+                      onClick={addFeature}
+                      className="text-blue-600 hover:text-blue-700"
+                    >
+                      + Add Feature
+                    </button>
+                  </div>
+                  {formData.features.map((feature, index) => (
+                    <div key={index} className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={feature}
+                        onChange={(e) =>
+                          handleFeatureChange(index, e.target.value)
+                        }
+                        placeholder="Enter feature"
+                        className="flex-1 p-2 border rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeFeature(index)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-full"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
 
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold">Integrations</h3>
+                  </div>
+                  <div className="flex gap-2 mb-4">
+                    <select
+                      onChange={handleIntegrationChange}
+                      className="flex-1 p-2 border rounded-lg"
+                      value=""
+                    >
+                      <option value="">Select an integration</option>
+                      {availableIntegrations.map((integration) => (
+                        <option
+                          key={integration.name}
+                          value={integration.name}
+                          disabled={formData.integrations.includes(
+                            integration.name
+                          )}
+                        >
+                          {integration.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    {formData.integrations.map((integration, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center p-2 bg-gray-50 rounded-lg"
+                      >
+                        <span>{integration}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeIntegration(index)}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded-full"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 <div className="border-t pt-4">
                   <h3 className="text-lg font-semibold mb-4">
                     Creator Details
